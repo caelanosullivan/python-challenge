@@ -70,12 +70,12 @@ def reformat_employee_record(employee_record_row):
     # Reformat DOB; append to list
 
     DOB_formatted = datetime.datetime.strptime(row[2],'%Y-%m-%d').strftime('%d/%m/%Y')
-    DOB_reformat.append()
+    DOB_reformat.append(DOB_formatted)
 
     # Create new SSN strings using last 4 digits preceded by ***-**-; append to list
     
     SSN_orig = row[3]
-    SSN_formatted = (f'***-**-',SSN_orig[6:]')
+    SSN_formatted = (f'***-**-{SSN_orig[7:]}')
     SSN_hidden.append(SSN_formatted)
 
 # Open CSVs, read in contents
@@ -101,10 +101,10 @@ with open(output_file, "w", newline="") as datafile:
     csvwriter = csv.writer(datafile)
     
     #Write header row
-    csvwriter.writerow(['Title', 'Price', 'Subscriber Count','Number of Reviews','Course Lenght'])
+    csvwriter.writerow(['Emp ID', 'First Name', 'Last Name','DOB','SSN','State'])
 
     #Write following rows
-    csvwriter.writerows(csv_tuples)
+    csvwriter.writerows(employee_tuples)
 
 ##change open("learner.csv", "w") to open("learner.csv", "a")
 
