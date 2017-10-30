@@ -28,26 +28,23 @@ import datetime
 csv1_path = os.path.join('raw_data','employee_data1.csv')
 csv2_path = os.path.join('raw_data','employee_data2.csv')
 
-# Create empty lists for original column data:
+# Create needed variables and empty lists for original column data:
 EmpID_original = []
 Name_original =[]
-DOB_original = []
-SSN_original = []
-State_original = []
 
 SSN_orig = None
 
-# Create empty lists for new columns:
-
-DOB_formatted = None
-SSN_formatted = None
-State_formatted = None
+# Create needed variables and empty lists for new columns:
 
 Name_first = []
 Name_last = []
 DOB_reformat = []
 SSN_hidden = []
 State_abbrev = []
+
+DOB_formatted = None
+SSN_formatted = None
+State_formatted = None
 
 # Dictionary of state names for conversions
 
@@ -104,13 +101,11 @@ us_state_abbrev = {
     'Wyoming': 'WY',
 }
 
-## Write 2 functions - one to clean data, one to append to lists and zip.
-# Function to reformat per-row records
-
-# Function to add row stuff to lists
+# Function to add employee row data to lists
 def reformat_employee_record(employee_record_row):
     
     # Append employee ID to list
+
     EmpID_original.append(row[0])
 
     # Split name column into first and last; append to respective lists
@@ -136,7 +131,7 @@ def reformat_employee_record(employee_record_row):
     State_formatted = us_state_abbrev.get(row[4])
     State_abbrev.append(State_formatted)
 
-# Open CSVs, read in contents
+# Open first CSV, read in contents
 
 with open(csv1_path, newline='') as csvfile:
     
@@ -144,28 +139,53 @@ with open(csv1_path, newline='') as csvfile:
         csvreader = csv.reader(csvfile, delimiter=',')
         next(csvreader, None)
 
-        # Loop through rows, converting dates to YYMM format and adding {date:rev} to dictionary
+        # Loop through rows, running function on each row to convert and append
         for row in csvreader:
             reformat_employee_record(row)
 
-## Zip lists into tuples
+# Zip lists into tuples
 employee_tuples = zip(EmpID_original,Name_first, Name_last, DOB_reformat, SSN_hidden, State_abbrev)
 
 # Set variable for output file
 output_file = os.path.join("employees_cleaned.csv")
 
-#opens it
+# Open output file in write mode for population of first CSV cleaned data
 with open(output_file, "w", newline="") as datafile:
     csvwriter = csv.writer(datafile)
     
     #Write header row
     csvwriter.writerow(['Emp ID', 'First Name', 'Last Name','DOB','SSN','State'])
 
-    #Write following rows
+    #Write employee data rows
     csvwriter.writerows(employee_tuples)
 
-##change open("learner.csv", "w") to open("learner.csv", "a")
+# Reset lists to empty in preparation for second CSV content
 
-### Need code for second CSV
+EmpID_original = []
+Name_original =[]
+Name_first = []
+Name_last = []
+DOB_reformat = []
+SSN_hidden = []
+State_abbrev = []
 
-## Write first set of data, call fxn again, APPEND second set.
+# Open second CSV, read in contents
+with open(csv2_path, newline='') as csvfile:
+    
+    # CSV reader specifies delimiter and variable to hold contents
+        csvreader = csv.reader(csvfile, delimiter=',')
+        next(csvreader, None)
+
+        # Loop through rows, running function on each row to convert and append
+        for row in csvreader:
+            reformat_employee_record(row)
+
+# Zip lists into tuples
+employee_tuples = zip(EmpID_original,Name_first, Name_last, DOB_reformat, SSN_hidden, State_abbrev)
+
+# Open output file in append mode for population of second CSV cleaned data
+with open(output_file, "a", newline="") as datafile:
+    csvwriter = csv.writer(datafile)
+    
+    #Write employee data rows
+    csvwriter.writerows(employee_tuples)
