@@ -35,9 +35,12 @@ DOB_original = []
 SSN_original = []
 State_original = []
 
+SSN_orig = None
+
 # Create empty lists for new columns:
 
 DOB_formatted = None
+SSN_formatted = None
 
 Name_first = []
 Name_last = []
@@ -50,10 +53,9 @@ State_abbrev = []
 
 # Function to reformat per-row records
 
-def 
 
 # Function to add row stuff to lists
-def reformat(employee_record_row):
+def reformat_employee_record(employee_record_row):
     
     # Append employee ID to list
     EmpID_original.append(row[0])
@@ -70,18 +72,45 @@ def reformat(employee_record_row):
     DOB_formatted = datetime.datetime.strptime(row[2],'%Y-%m-%d').strftime('%d/%m/%Y')
     DOB_reformat.append()
 
-    # append appropriate cells to categorized lists
-    Title.append(row[1])
-    Price.append(row[4])
-    Subscriber_Count.append(row[5])
-    Number_of_Reviews.append(row[6])
-    #Parse the course length column by splitting on space, 
-    # then append the 0th item in THAT list(4.5, etc) to Course_Length list
-    parsed_course_length = row[9].split(" ")
-    #parsed_course_length = int(parsed_course_length[0])  Can I do this??
-    Course_Length.append(parsed_course_length[0])
+    # Create new SSN strings using last 4 digits preceded by ***-**-; append to list
+    
+    SSN_orig = row[3]
+    SSN_formatted = (f'***-**-',SSN_orig[6:]')
+    SSN_hidden.append(SSN_formatted)
+
+# Open CSVs, read in contents
+
+with open(csv1_path, newline='') as csvfile:
+    
+    # CSV reader specifies delimiter and variable to hold contents
+        csvreader = csv.reader(csvfile, delimiter=',')
+        next(csvreader, None)
+
+        # Loop through rows, converting dates to YYMM format and adding {date:rev} to dictionary
+        for row in csvreader:
+            reformat_employee_record(row)
+
+## Zip lists into tuples
+employee_tuples = zip(EmpID_original,Name_first, Name_last, DOB_reformat, SSN_hidden)
+
+# Set variable for output file
+output_file = os.path.join("employees_cleaned.csv")
+
+#opens it
+with open(output_file, "w", newline="") as datafile:
+    csvwriter = csv.writer(datafile)
+    
+    #Write header row
+    csvwriter.writerow(['Title', 'Price', 'Subscriber Count','Number of Reviews','Course Lenght'])
+
+    #Write following rows
+    csvwriter.writerows(csv_tuples)
+
+##change open("learner.csv", "w") to open("learner.csv", "a")
 
 
-## Hard code opening CSVs and call functions
+### Need code for second CSV
 
 ## Write first set of data, call fxn again, APPEND second set.
+
+
