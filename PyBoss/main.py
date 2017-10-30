@@ -4,12 +4,12 @@
 This module reads in two CSVs of employee records and converts them to the required format.
 
 Conversions include:
-- The Name column should be split into separate First Name and Last Name columns.
-- The DOB data should be re-written into DD/MM/YYYY format.
-- The SSN data should be re-written such that the first five numbers are hidden from view.
-- The State data should be re-written as simple two-letter abbreviations.
+- The Name column split into separate First Name and Last Name columns.
+- The DOB data re-written into DD/MM/YYYY format.
+- The SSN data re-written such that the first five numbers are hidden from view.
+- The State data re-written as simple two-letter abbreviations.
 
-Finally, it exports a CSV file of the results.
+Finally, it creates a CSV file of the results.
 
 Example:
 
@@ -41,6 +41,7 @@ SSN_orig = None
 
 DOB_formatted = None
 SSN_formatted = None
+State_formatted = None
 
 Name_first = []
 Name_last = []
@@ -48,11 +49,63 @@ DOB_reformat = []
 SSN_hidden = []
 State_abbrev = []
 
+# Dictionary of state names for conversions
+
+us_state_abbrev = {
+    'Alabama': 'AL',
+    'Alaska': 'AK',
+    'Arizona': 'AZ',
+    'Arkansas': 'AR',
+    'California': 'CA',
+    'Colorado': 'CO',
+    'Connecticut': 'CT',
+    'Delaware': 'DE',
+    'Florida': 'FL',
+    'Georgia': 'GA',
+    'Hawaii': 'HI',
+    'Idaho': 'ID',
+    'Illinois': 'IL',
+    'Indiana': 'IN',
+    'Iowa': 'IA',
+    'Kansas': 'KS',
+    'Kentucky': 'KY',
+    'Louisiana': 'LA',
+    'Maine': 'ME',
+    'Maryland': 'MD',
+    'Massachusetts': 'MA',
+    'Michigan': 'MI',
+    'Minnesota': 'MN',
+    'Mississippi': 'MS',
+    'Missouri': 'MO',
+    'Montana': 'MT',
+    'Nebraska': 'NE',
+    'Nevada': 'NV',
+    'New Hampshire': 'NH',
+    'New Jersey': 'NJ',
+    'New Mexico': 'NM',
+    'New York': 'NY',
+    'North Carolina': 'NC',
+    'North Dakota': 'ND',
+    'Ohio': 'OH',
+    'Oklahoma': 'OK',
+    'Oregon': 'OR',
+    'Pennsylvania': 'PA',
+    'Rhode Island': 'RI',
+    'South Carolina': 'SC',
+    'South Dakota': 'SD',
+    'Tennessee': 'TN',
+    'Texas': 'TX',
+    'Utah': 'UT',
+    'Vermont': 'VT',
+    'Virginia': 'VA',
+    'Washington': 'WA',
+    'West Virginia': 'WV',
+    'Wisconsin': 'WI',
+    'Wyoming': 'WY',
+}
+
 ## Write 2 functions - one to clean data, one to append to lists and zip.
-## DOB in plain text format: 1970-05-24
-
 # Function to reformat per-row records
-
 
 # Function to add row stuff to lists
 def reformat_employee_record(employee_record_row):
@@ -60,7 +113,7 @@ def reformat_employee_record(employee_record_row):
     # Append employee ID to list
     EmpID_original.append(row[0])
 
-    # Split name column into first and last; append to lists
+    # Split name column into first and last; append to respective lists
 
     Name_original = row[1].split(" ")
 
@@ -78,6 +131,11 @@ def reformat_employee_record(employee_record_row):
     SSN_formatted = (f'***-**-{SSN_orig[7:]}')
     SSN_hidden.append(SSN_formatted)
 
+    # Convert state names to two-letter abbrevations; append to list
+
+    State_formatted = us_state_abbrev.get(row[4])
+    State_abbrev.append(State_formatted)
+
 # Open CSVs, read in contents
 
 with open(csv1_path, newline='') as csvfile:
@@ -91,7 +149,7 @@ with open(csv1_path, newline='') as csvfile:
             reformat_employee_record(row)
 
 ## Zip lists into tuples
-employee_tuples = zip(EmpID_original,Name_first, Name_last, DOB_reformat, SSN_hidden)
+employee_tuples = zip(EmpID_original,Name_first, Name_last, DOB_reformat, SSN_hidden, State_abbrev)
 
 # Set variable for output file
 output_file = os.path.join("employees_cleaned.csv")
@@ -108,9 +166,6 @@ with open(output_file, "w", newline="") as datafile:
 
 ##change open("learner.csv", "w") to open("learner.csv", "a")
 
-
 ### Need code for second CSV
 
 ## Write first set of data, call fxn again, APPEND second set.
-
-
